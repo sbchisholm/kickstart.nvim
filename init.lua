@@ -327,6 +327,13 @@ vim.o.hlsearch = false
 
 -- Make line numbers default
 vim.wo.number = true
+vim.wo.relativenumber = true
+
+-- Always keep 8 leading lines when scrolling
+vim.opt.scrolloff = 8
+
+-- Show the column for 80 characters
+vim.opt.colorcolumn = "80"
 
 -- Enable mouse mode
 vim.o.mouse = 'a'
