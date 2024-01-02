@@ -94,7 +94,13 @@ require('lazy').setup({
       'folke/neodev.nvim',
     },
   },
-
+  {
+    "williamboman/mason-lspconfig.nvim",
+    lazy = false,
+    opts = {
+      auto_install = true,
+    },
+  },
   {
     -- Autocompletion
     'hrsh7th/nvim-cmp',
@@ -230,6 +236,7 @@ require('lazy').setup({
     branch = '0.1.x',
     dependencies = {
       'nvim-lua/plenary.nvim',
+      "nvim-telescope/telescope-ui-select.nvim",
       -- Fuzzy Finder Algorithm which requires local dependencies to be built.
       -- Only load if `make` is available. Make sure you have the system
       -- requirements installed.
@@ -243,6 +250,17 @@ require('lazy').setup({
         end,
       },
     },
+    config = function()
+      require("telescope").setup({
+        extensions = {
+          ['ui-select'] = {
+            require("telescope.themes").get_dropdown {
+            }
+          }
+        }
+      })
+      require("telescope").load_extension("ui-select")
+    end
   },
 
   {
@@ -283,27 +301,78 @@ require('lazy').setup({
     end,
   },
   {
-    'romgrk/barbar.nvim',
-    dependencies = {
-      'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
-      'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
-    },
-    init = function() vim.g.barbar_auto_setup = false end,
-    opts = {
-      -- Set the filetypes which barbar will offset itself for
-      sidebar_filetypes = {
-        -- Use the default values: {event = 'BufWinLeave', text = nil}
-        NvimTree = true,
-        -- Or, specify the text used for the offset:
-        undotree = {text = 'undotree'},
-        -- Or, specify the event which the sidebar executes when leaving:
-        ['neo-tree'] = {event = 'BufWipeout'},
-        -- Or, specify both
-        Outline = {event = 'BufWinLeave', text = 'symbols-outline'},
-      },
-    },
-    version = '^1.0.0', -- optional: only update when a new 1.x version is released
+    'lervag/vimtex',
+    init = function ()
+      vim.g.vimtex_view_method = 'skim'
+    end,
   },
+  {
+    "ThePrimeagen/harpoon",
+    branch = "harpoon2",
+    requires = { {"nvim-lua/plenary.nvim"} },
+    config = function ()
+      local harpoon = require("harpoon")
+
+      -- REQUIRED
+      harpoon:setup()
+      -- REQUIRED
+
+      vim.keymap.set("n", "<leader>a", function() harpoon:list():append() end)
+      vim.keymap.set("n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
+
+      vim.keymap.set("n", "<C-h>", function() harpoon:list():select(1) end)
+      vim.keymap.set("n", "<C-t>", function() harpoon:list():select(2) end)
+      vim.keymap.set("n", "<C-n>", function() harpoon:list():select(3) end)
+      vim.keymap.set("n", "<C-s>", function() harpoon:list():select(4) end)
+
+      -- Toggle previous & next buffers stored within Harpoon list
+      vim.keymap.set("n", "<C-S-P>", function() harpoon:list():prev() end)
+      vim.keymap.set("n", "<C-S-N>", function() harpoon:list():next() end)
+
+      -- basic telescope configuration
+      local conf = require("telescope.config").values
+      local function toggle_telescope(harpoon_files)
+        local file_paths = {}
+        for _, item in ipairs(harpoon_files.items) do
+          table.insert(file_paths, item.value)
+        end
+
+        require("telescope.pickers").new({}, {
+          prompt_title = "Harpoon",
+          finder = require("telescope.finders").new_table({
+            results = file_paths,
+          }),
+          previewer = conf.file_previewer({}),
+          sorter = conf.generic_sorter({}),
+        }):find()
+      end
+
+      vim.keymap.set("n", "<C-e>", function() toggle_telescope(harpoon:list()) end,
+        { desc = "Open harpoon window" })
+    end,
+  },
+--  {
+--    'romgrk/barbar.nvim',
+--    dependencies = {
+--      'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
+--      'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
+--    },
+--    init = function() vim.g.barbar_auto_setup = false end,
+--    opts = {
+--      -- Set the filetypes which barbar will offset itself for
+--      sidebar_filetypes = {
+--        -- Use the default values: {event = 'BufWinLeave', text = nil}
+--        NvimTree = true,
+--        -- Or, specify the text used for the offset:
+--        undotree = {text = 'undotree'},
+--        -- Or, specify the event which the sidebar executes when leaving:
+--        ['neo-tree'] = {event = 'BufWipeout'},
+--        -- Or, specify both
+--        Outline = {event = 'BufWinLeave', text = 'symbols-outline'},
+--      },
+--    },
+--    version = '^1.0.0', -- optional: only update when a new 1.x version is released
+--  },
   {
     "utilyre/barbecue.nvim",
     name = "barbecue",
@@ -482,7 +551,7 @@ vim.defer_fn(function()
     ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash' },
 
     -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
-    auto_install = false,
+    auto_install = true,
 
     highlight = { enable = true },
     indent = { enable = true },
@@ -713,6 +782,13 @@ cmp.setup {
     { name = 'path' },
   },
 }
+
+-- TODO: plugins --
+--  - Trouble
+--  - TokyoNight
+--  - RosePine
+--  - lsp-zero
+--  - oil.vim
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
