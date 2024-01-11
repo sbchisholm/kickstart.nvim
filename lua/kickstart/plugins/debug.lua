@@ -92,7 +92,7 @@ return {
   {
     "mfussenegger/nvim-dap-python",
     config = function ()
-      require('dap-python').setup('/opt/local/bin/python')
+      require('dap-python').setup('/home/steve/.pyenv/shims/python')
     end
   }
 }

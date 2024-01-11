@@ -76,6 +76,15 @@ require('lazy').setup({
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
 
+  -- undotree
+  {
+    'mbbill/undotree',
+    keys = {
+      { "<leader>ut", "<cmd>UndotreeToggle<cr>", desc = "Open [U]ndo [T]ree" },
+    },
+
+  },
+
   -- NOTE: This is where your plugins related to LSP can be installed.
   --  The configuration is done below. Search for lspconfig to find it below.
   {
@@ -93,6 +102,13 @@ require('lazy').setup({
       -- Additional lua configuration, makes nvim stuff amazing!
       'folke/neodev.nvim',
     },
+  },
+  {
+    "williamboman/mason.nvim",
+    lazy = false,
+    config = function()
+      require("mason").setup()
+    end,
   },
   {
     "williamboman/mason-lspconfig.nvim",
@@ -116,10 +132,15 @@ require('lazy').setup({
       -- Adds a number of user-friendly snippets
       'rafamadriz/friendly-snippets',
     },
+    config = function()
+      require("telescope").setup({
+        require("luasnip.loaders.from_vscode").lazy_load()
+      })
+    end,
   },
 
   -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim', opts = {} },
+  { 'folke/which-key.nvim',  opts = {} },
   {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
@@ -194,15 +215,23 @@ require('lazy').setup({
       end,
     },
   },
-
   {
-    -- Theme inspired by Atom
-    'navarasu/onedark.nvim',
+    "catppuccin/nvim",
+    lazy = false,
+    name = "catppuccin",
     priority = 1000,
     config = function()
-      vim.cmd.colorscheme 'onedark'
-    end,
+      vim.cmd.colorscheme "catppuccin"
+    end
   },
+  --  {
+  --    -- Theme inspired by Atom
+  --    'navarasu/onedark.nvim',
+  --    priority = 1000,
+  --    config = function()
+  --      vim.cmd.colorscheme 'onedark'
+  --    end,
+  --  },
 
   {
     -- Set lualine as statusline
@@ -211,7 +240,7 @@ require('lazy').setup({
     opts = {
       options = {
         icons_enabled = false,
-        theme = 'onedark',
+        theme = 'catppuccin',
         component_separators = '|',
         section_separators = '',
       },
@@ -302,15 +331,15 @@ require('lazy').setup({
   },
   {
     'lervag/vimtex',
-    init = function ()
+    init = function()
       vim.g.vimtex_view_method = 'skim'
     end,
   },
   {
     "ThePrimeagen/harpoon",
     branch = "harpoon2",
-    requires = { {"nvim-lua/plenary.nvim"} },
-    config = function ()
+    requires = { { "nvim-lua/plenary.nvim" } },
+    config = function()
       local harpoon = require("harpoon")
 
       -- REQUIRED
@@ -320,10 +349,10 @@ require('lazy').setup({
       vim.keymap.set("n", "<leader>a", function() harpoon:list():append() end)
       vim.keymap.set("n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
 
-      vim.keymap.set("n", "<C-h>", function() harpoon:list():select(1) end)
-      vim.keymap.set("n", "<C-t>", function() harpoon:list():select(2) end)
-      vim.keymap.set("n", "<C-n>", function() harpoon:list():select(3) end)
-      vim.keymap.set("n", "<C-s>", function() harpoon:list():select(4) end)
+      --vim.keymap.set("n", "<C-h>", function() harpoon:list():select(1) end)
+      --vim.keymap.set("n", "<C-t>", function() harpoon:list():select(2) end)
+      --vim.keymap.set("n", "<C-n>", function() harpoon:list():select(3) end)
+      --vim.keymap.set("n", "<C-s>", function() harpoon:list():select(4) end)
 
       -- Toggle previous & next buffers stored within Harpoon list
       vim.keymap.set("n", "<C-S-P>", function() harpoon:list():prev() end)
@@ -351,28 +380,28 @@ require('lazy').setup({
         { desc = "Open harpoon window" })
     end,
   },
---  {
---    'romgrk/barbar.nvim',
---    dependencies = {
---      'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
---      'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
---    },
---    init = function() vim.g.barbar_auto_setup = false end,
---    opts = {
---      -- Set the filetypes which barbar will offset itself for
---      sidebar_filetypes = {
---        -- Use the default values: {event = 'BufWinLeave', text = nil}
---        NvimTree = true,
---        -- Or, specify the text used for the offset:
---        undotree = {text = 'undotree'},
---        -- Or, specify the event which the sidebar executes when leaving:
---        ['neo-tree'] = {event = 'BufWipeout'},
---        -- Or, specify both
---        Outline = {event = 'BufWinLeave', text = 'symbols-outline'},
---      },
---    },
---    version = '^1.0.0', -- optional: only update when a new 1.x version is released
---  },
+  --  {
+  --    'romgrk/barbar.nvim',
+  --    dependencies = {
+  --      'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
+  --      'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
+  --    },
+  --    init = function() vim.g.barbar_auto_setup = false end,
+  --    opts = {
+  --      -- Set the filetypes which barbar will offset itself for
+  --      sidebar_filetypes = {
+  --        -- Use the default values: {event = 'BufWinLeave', text = nil}
+  --        NvimTree = true,
+  --        -- Or, specify the text used for the offset:
+  --        undotree = {text = 'undotree'},
+  --        -- Or, specify the event which the sidebar executes when leaving:
+  --        ['neo-tree'] = {event = 'BufWipeout'},
+  --        -- Or, specify both
+  --        Outline = {event = 'BufWinLeave', text = 'symbols-outline'},
+  --      },
+  --    },
+  --    version = '^1.0.0', -- optional: only update when a new 1.x version is released
+  --  },
   {
     "utilyre/barbecue.nvim",
     name = "barbecue",
@@ -385,6 +414,87 @@ require('lazy').setup({
       -- configurations go here
     },
   },
+  {
+    'linux-cultist/venv-selector.nvim',
+    dependencies = { 'neovim/nvim-lspconfig', 'nvim-telescope/telescope.nvim', 'mfussenegger/nvim-dap-python' },
+    opts = {
+      -- Your options go here
+      -- name = "venv",
+      -- auto_refresh = false
+    },
+    event = 'VeryLazy', -- Optional: needed only if you want to type `:VenvSelect` without a keymapping
+    keys = {
+      -- Keymap to open VenvSelector to pick a venv.
+      { '<leader>vs', '<cmd>VenvSelect<cr>' },
+      -- Keymap to retrieve the venv from a cache (the one previously used for the same project directory).
+      { '<leader>vc', '<cmd>VenvSelectCached<cr>' },
+    },
+  },
+  {
+    "folke/trouble.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    opts = {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    },
+  },
+  {
+    "nvimtools/none-ls.nvim",
+    config = function()
+      local null_ls = require("null-ls")
+      null_ls.setup({
+        sources = {
+          null_ls.builtins.formatting.stylua,
+          null_ls.builtins.formatting.prettier,
+          null_ls.builtins.diagnostics.erb_lint,
+          null_ls.builtins.diagnostics.eslint_d,
+          null_ls.builtins.diagnostics.rubocop,
+          null_ls.builtins.formatting.rubocop,
+
+          null_ls.builtins.formatting.black,
+          null_ls.builtins.formatting.terraform_fmt,
+
+          null_ls.builtins.completion.luasnip,
+          null_ls.builtins.completion.spell,
+          null_ls.builtins.code_actions.shellcheck,
+        },
+      })
+
+      vim.keymap.set("n", "<leader>gf", vim.lsp.buf.format, {})
+    end,
+  },
+  --  {
+  --    "nathom/filetype.nvim",
+  --    config = function()
+  --      require("filetype").setup {
+  --        overrides = {
+  --          extensions = {
+  --            tf = "terraform",
+  --            tfvars = "terraform",
+  --            tfstate = "json",
+  --          },
+  --        },
+  --      }
+  --    end,
+  --  },
+  {
+    "christoomey/vim-tmux-navigator",
+    cmd = {
+      "TmuxNavigateLeft",
+      "TmuxNavigateDown",
+      "TmuxNavigateUp",
+      "TmuxNavigateRight",
+      "TmuxNavigatePrevious",
+    },
+    keys = {
+      { "<c-h>",  "<cmd><C-U>TmuxNavigateLeft<cr>" },
+      { "<c-j>",  "<cmd><C-U>TmuxNavigateDown<cr>" },
+      { "<c-k>",  "<cmd><C-U>TmuxNavigateUp<cr>" },
+      { "<c-l>",  "<cmd><C-U>TmuxNavigateRight<cr>" },
+      { "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
+    },
+  }
 }, {})
 
 -- [[ Setting options ]]
@@ -640,7 +750,7 @@ local on_attach = function(_, bufnr)
 
   -- See `:help K` for why this keymap
   nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
-  nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
+  --nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
 
   -- Lesser used LSP functionality
   nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
@@ -667,6 +777,7 @@ require('which-key').register {
   ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
   ['<leader>t'] = { name = '[T]oggle', _ = 'which_key_ignore' },
   ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
+  ['<leader>u'] = { name = '[U]Undo Tree', _ = 'which_key_ignore' },
 }
 -- register which-key VISUAL mode
 -- required for visual <leader>hs (hunk stage) to work
@@ -691,7 +802,8 @@ require('mason-lspconfig').setup()
 local servers = {
   -- clangd = {},
   -- gopls = {},
-  -- pyright = {},
+  pyright = {},
+  terraformls = {},
   -- rust_analyzer = {},
   -- tsserver = {},
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
@@ -783,6 +895,9 @@ cmp.setup {
   },
 }
 
+
+-- recognize .tfvars files as terraform
+vim.cmd([[autocmd BufRead,BufNewFile *.tf,*.tfvars set filetype=terraform]])
 -- TODO: plugins --
 --  - Trouble
 --  - TokyoNight
