@@ -440,44 +440,43 @@ require('lazy').setup({
     },
   },
   {
-    "nvimtools/none-ls.nvim",
+    "jay-babu/mason-null-ls.nvim",
+    event = { "BufReadPre", "BufNewFile" },
+    dependencies = {
+      "williamboman/mason.nvim",
+      "nvimtools/none-ls.nvim",
+    },
     config = function()
+      require("mason").setup()
       local null_ls = require("null-ls")
       null_ls.setup({
         sources = {
           null_ls.builtins.formatting.stylua,
           null_ls.builtins.formatting.prettier,
-          null_ls.builtins.diagnostics.erb_lint,
-          null_ls.builtins.diagnostics.eslint_d,
-          null_ls.builtins.diagnostics.rubocop,
-          null_ls.builtins.formatting.rubocop,
-
           null_ls.builtins.formatting.black,
           null_ls.builtins.formatting.terraform_fmt,
+          null_ls.builtins.formatting.clang_format,
 
-          null_ls.builtins.completion.luasnip,
           null_ls.builtins.completion.spell,
           null_ls.builtins.code_actions.shellcheck,
         },
-      })
 
-      vim.keymap.set("n", "<leader>gf", vim.lsp.buf.format, {})
+        -- workaround to limit clangd to only utf-16, default { 'utf-8', 'utf-16' }
+        on_attach = function ()
+           local capabilities = vim.lsp.protocol.make_client_capabilities()
+           capabilities.offsetEncoding = 'utf-16'
+           require('lspconfig').clangd.setup{
+              capabilities = capabilities
+           }
+        end,
+      })
+      require("mason-null-ls").setup({
+        ensure_installed = nil,
+        automatic_installation = true,
+      })
+      vim.keymap.set("n", "<leader>ff", vim.lsp.buf.format, {})
     end,
   },
-  --  {
-  --    "nathom/filetype.nvim",
-  --    config = function()
-  --      require("filetype").setup {
-  --        overrides = {
-  --          extensions = {
-  --            tf = "terraform",
-  --            tfvars = "terraform",
-  --            tfstate = "json",
-  --          },
-  --        },
-  --      }
-  --    end,
-  --  },
   {
     "christoomey/vim-tmux-navigator",
     cmd = {
@@ -805,7 +804,7 @@ require('mason-lspconfig').setup()
 --  If you want to override the default filetypes that your language server will attach to you can
 --  define the property 'filetypes' to the map in question.
 local servers = {
-  -- clangd = {},
+  clangd = {},
   -- gopls = {},
   pyright = {},
   terraformls = {},
@@ -903,6 +902,7 @@ cmp.setup {
 
 -- recognize .tfvars files as terraform
 vim.cmd([[autocmd BufRead,BufNewFile *.tf,*.tfvars set filetype=terraform]])
+
 -- TODO: plugins --
 --  - Trouble
 --  - TokyoNight
