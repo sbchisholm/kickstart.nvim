@@ -408,44 +408,6 @@ require('lazy').setup({
     },
   },
   {
-    "jay-babu/mason-null-ls.nvim",
-    event = { "BufReadPre", "BufNewFile" },
-    dependencies = {
-      "williamboman/mason.nvim",
-      "nvimtools/none-ls.nvim",
-    },
-    config = function()
-      require("mason").setup()
-      local null_ls = require("null-ls")
-      null_ls.setup({
-        sources = {
-          null_ls.builtins.formatting.stylua,
-          null_ls.builtins.formatting.prettier,
-          null_ls.builtins.formatting.black,
-          null_ls.builtins.formatting.terraform_fmt,
-          null_ls.builtins.formatting.clang_format,
-
-          null_ls.builtins.completion.spell,
-          null_ls.builtins.code_actions.shellcheck,
-        },
-
-        -- workaround to limit clangd to only utf-16, default { 'utf-8', 'utf-16' }
-        on_attach = function ()
-           local capabilities = vim.lsp.protocol.make_client_capabilities()
-           capabilities.offsetEncoding = 'utf-16'
-           require('lspconfig').clangd.setup{
-              capabilities = capabilities
-           }
-        end,
-      })
-      require("mason-null-ls").setup({
-        ensure_installed = nil,
-        automatic_installation = true,
-      })
-      vim.keymap.set("n", "<leader>ff", vim.lsp.buf.format, {})
-    end,
-  },
-  {
     "christoomey/vim-tmux-navigator",
     cmd = {
       "TmuxNavigateLeft",
@@ -461,7 +423,33 @@ require('lazy').setup({
       { "<c-l>",  "<cmd><C-U>TmuxNavigateRight<cr>" },
       { "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
     },
-  }
+  },
+  {
+    "nvim-neotest/neotest",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "antoinemadec/FixCursorHold.nvim",
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-neotest/neotest-python",
+    },
+    config = function()
+      local neotest = require 'neotest'
+      neotest.setup({
+        adapters = {
+          require("neotest-python")({
+            dap = { justMyCode = false },
+          }),
+        }
+      })
+
+      local function open_neotest()
+        neotest.summary.open()
+        neotest.output_panel.open()
+      end
+
+      vim.keymap.set('n', '<leader>To', open_neotest, { desc = 'Neo[T]est [O]pen' })
+    end
+  },
 }, {})
 
 -- [[ Setting options ]]
@@ -750,6 +738,7 @@ require('which-key').register {
   ['<leader>t'] = { name = '[T]oggle', _ = 'which_key_ignore' },
   ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
   ['<leader>u'] = { name = '[U]Undo Tree', _ = 'which_key_ignore' },
+  ['<leader>T'] = { name = 'Neo[T]est', _ = 'which_key_ignore' },
 }
 -- register which-key VISUAL mode
 -- required for visual <leader>hs (hunk stage) to work
