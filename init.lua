@@ -442,12 +442,14 @@ require('lazy').setup({
         }
       })
 
-      local function open_neotest()
-        neotest.summary.open()
-        neotest.output_panel.open()
-      end
+      vim.keymap.set('n', '<leader>To', neotest.output.open, { desc = 'Neo[T]est [O]utput' })
+      vim.keymap.set('n', '<leader>Ts', neotest.summary.open, { desc = 'Neo[T]est [S]ummary' })
+      vim.keymap.set('n', '<leader>Tp', neotest.output_panel.open, { desc = 'Neo[T]est Output [P]anel' })
 
-      vim.keymap.set('n', '<leader>To', open_neotest, { desc = 'Neo[T]est [O]pen' })
+      vim.keymap.set('n', '<leader>Tr', neotest.run.run, { desc = 'Neo[T]est [R]un test' })
+      vim.keymap.set('n', '<leader>Td', function() neotest.run.run({strategy = 'dap'}) end, { desc = 'Neo[T]est [D]ebug test' })
+      vim.keymap.set('n', '<leader>Tf', function() neotest.run.run(vim.fn.expand('%')) end, { desc = 'Neo[T]est Run [F]ile' })
+      vim.keymap.set('n', '<leader>TD', function() neotest.run.run(vim.fn.expand({'%', strategy = 'dap'})) end, { desc = 'Neo[T]est [D]ebug file' })
     end
   },
 }, {})
@@ -613,7 +615,7 @@ vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = 
 vim.defer_fn(function()
   require('nvim-treesitter.configs').setup {
     -- Add languages to be installed here that you want installed for treesitter
-    ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash', 'terraform'},
+    ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash', 'terraform', 'groovy', 'c_sharp'},
 
     -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
     auto_install = true,

@@ -14,6 +14,7 @@ return {
     dependencies = {
       -- Creates a beautiful debugger UI
       'rcarriga/nvim-dap-ui',
+      'nvim-neotest/nvim-nio',
 
       -- Installs the debug adapters for you
       'williamboman/mason.nvim',
@@ -44,7 +45,8 @@ return {
       }
 
       -- Break on excptions
-      dap.defaults.fallback.exception_breakpoints = {'raised'}
+      -- NOTE: this wasn't working well with exception
+      dap.defaults.fallback.exception_breakpoints = {'uncaught'}
 
       -- Basic debugging keymaps, feel free to change to your liking!
       vim.keymap.set('n', '<F5>', dap.continue, { desc = 'Debug: Start/Continue' })
@@ -93,6 +95,10 @@ return {
     "mfussenegger/nvim-dap-python",
     config = function ()
       require('dap-python').setup('/home/steve/.pyenv/shims/python')
+
+      vim.keymap.set('n', '<leader>dn', require('dap-python').test_method, { desc = "debug nearest test method" })
+      vim.keymap.set('n', '<leader>df', require('dap-python').test_class, { desc = "debug nearest test class" })
+      vim.keymap.set('v', '<leader>ds <ESC>', require('dap-python').debug_selection, { desc = "debug selection" })
     end
   }
 }
